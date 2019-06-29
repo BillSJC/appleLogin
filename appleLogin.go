@@ -13,24 +13,26 @@ import (
 	"time"
 )
 
+// AppleConfig Main struct of the package
 type AppleConfig struct {
-	TeamID      string
-	ClientID    string
-	RedirectURI string
-	KeyID       string
-	AESCert     interface{}
+	TeamID      string      //Your Apple Team ID
+	ClientID    string      //Your Service which enable sign-in-with-apple service
+	RedirectURI string      //Your RedirectURI config in apple website
+	KeyID       string      //Your Secret Key ID
+	AESCert     interface{} //Your Secret Key Created By X509 package
 }
 
+// AppleAuthToken main response of apple REST-API
 type AppleAuthToken struct {
-	AccessToken  string `json:"access_token"`
-	ExpiresIn    int64  `json:"expires_in"`
-	IDToken      string `json:"id_token"`
-	RefreshToken string `json:"refresh_token"`
-	TokenType    string `json:"token_type"`
+	AccessToken  string `json:"access_token"`  //AccessToken
+	ExpiresIn    int64  `json:"expires_in"`    //Expires in
+	IDToken      string `json:"id_token"`      //ID token
+	RefreshToken string `json:"refresh_token"` //RF token
+	TokenType    string `json:"token_type"`    //Token Type
 }
 
-const AppleAuthURL = "https://appleid.apple.com/auth/token"
-const AppleGrantType = "authorization_code"
+const AppleAuthURL = "https://appleid.apple.com/auth/token" //the auth URL of apple
+const AppleGrantType = "authorization_code"                 //the grant type of apple auth
 
 //LoadP8CertByByte use x509.ParsePKCS8PrivateKey to Parse cert file
 func (a *AppleConfig) LoadP8CertByByte(str []byte) (err error) {
@@ -52,6 +54,7 @@ func (a *AppleConfig) LoadP8CertByFile(path string) (err error) {
 	return a.LoadP8CertByByte([]byte(b))
 }
 
+//InitAppleConfig init a new Client of this pkg
 func InitAppleConfig(teamID string, clientID string, redirectURI string, keyID string) *AppleConfig {
 	return &AppleConfig{
 		teamID,
@@ -62,6 +65,7 @@ func InitAppleConfig(teamID string, clientID string, redirectURI string, keyID s
 	}
 }
 
+//CreateCallbackURL create a callback URL for frontend
 func (a *AppleConfig) CreateCallbackURL(state string) string {
 	u := url.Values{}
 	u.Add("response_type", "code")
@@ -72,6 +76,7 @@ func (a *AppleConfig) CreateCallbackURL(state string) string {
 	return "https://appleid.apple.com/auth/authorize?" + u.Encode()
 }
 
+//input your code and expire-time to get AccessToken of apple
 func (a *AppleConfig) GetAppleToken(code string, expireTime int64) (*AppleAuthToken, error) {
 	//test cert
 	if a.AESCert == nil {
