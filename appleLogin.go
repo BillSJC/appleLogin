@@ -4,10 +4,10 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/parnurzeal/gorequest"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"net/url"
 	"time"
@@ -47,7 +47,7 @@ func (a *AppleConfig) LoadP8CertByByte(str []byte) (err error) {
 
 //LoadP8CertByFile load file and Parse it
 func (a *AppleConfig) LoadP8CertByFile(path string) (err error) {
-	b, err := ioutil.ReadFile("cert")
+	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return
 	}
@@ -87,7 +87,7 @@ func (a *AppleConfig) GetAppleToken(code string, expireTime int64) (*AppleAuthTo
 		"iss": a.TeamID,
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Unix() + expireTime,
-		"aud": AppleAuthURL,
+		"aud": "https://appleid.apple.com",
 		"sub": a.ClientID,
 	})
 	//set JWT header
@@ -101,7 +101,7 @@ func (a *AppleConfig) GetAppleToken(code string, expireTime int64) (*AppleAuthTo
 	v.Set("client_id", a.ClientID)
 	v.Set("client_secret", tokenString)
 	v.Set("code", code)
-	v.Set("grant_type", "authorization_code")
+	v.Set("grant_type", AppleGrantType)
 	v.Set("redirect_uri", a.RedirectURI)
 	fmt.Println(tokenString)
 	vs := v.Encode()
