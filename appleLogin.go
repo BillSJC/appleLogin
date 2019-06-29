@@ -87,7 +87,7 @@ func (a *AppleConfig) GetAppleToken(code string, expireTime int64) (*AppleAuthTo
 		"iss": a.TeamID,
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Unix() + expireTime,
-		"aud": "AppleAuthURL",
+		"aud": AppleAuthURL,
 		"sub": a.ClientID,
 	})
 	//set JWT header
