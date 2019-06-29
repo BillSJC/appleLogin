@@ -2,6 +2,8 @@
 
 A tool for `Sign In with Apple` REST API written in `Golang`
 
+![go-report](https://goreportcard.com/badge/github.com/BillSJC/appleLogin)
+
 ![logo here](logo.jpg)
 
 ### What it dose?
