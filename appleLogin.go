@@ -6,11 +6,12 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/parnurzeal/gorequest"
 	"io/ioutil"
 	"net/url"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/parnurzeal/gorequest"
 )
 
 // AppleConfig Main struct of the package
@@ -103,7 +104,6 @@ func (a *AppleConfig) GetAppleToken(code string, expireTime int64) (*AppleAuthTo
 	v.Set("code", code)
 	v.Set("grant_type", AppleGrantType)
 	v.Set("redirect_uri", a.RedirectURI)
-	fmt.Println(tokenString)
 	vs := v.Encode()
 	//send request
 	resp, body, err2 := gorequest.New().Post("https://appleid.apple.com/auth/token").Type("urlencoded").Send(vs).End()
@@ -112,8 +112,7 @@ func (a *AppleConfig) GetAppleToken(code string, expireTime int64) (*AppleAuthTo
 	}
 	//check response
 	if resp.StatusCode != 200 {
-		fmt.Println(body)
-		panic(errors.New("post failed : resp code is not 200"))
+		return nil, errors.New("post failed : resp code is not 200")
 	}
 	t := new(AppleAuthToken)
 	err := json.Unmarshal([]byte(body), t)
